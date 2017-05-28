@@ -23,19 +23,25 @@ db_host='localhost'
 menu_char_border_left='|'                                           #Znak obrmowania z lewej strony
 menu_char_border_right='|'                                          #Znak obrmowania z prawej strony
 menu_char_border_top='_'                                            #Znak obrmowania z góryr
+menu_char_border_down='_'   
 menu_char_lin1='='
 menu_char_lin2='^'
 menu_char_lin3='*'
 
+# POZYCJE MENU
+menu_main_list={"L":'Logowanie',"W":'Wyjście'}
+menu_prac_list={"O":'Odczyt',"P":'Powrót',"W":'Wyjście'}
+menu_store_list={"E":'Ean',"I":'Index',"G":'Grupa',"Z":'Zawaansowane',"P":'Powrót'}
+menu_name="GŁÓWNE"
 
-menu1_list=['Logowanie','Ustawienia','Wyjście']
-menu_prac_list=['MENU Pracownik','Odczyt','Ustawienia','Powrót','Wyjście']
-menu_name="MAIN MENU"
 
 # szerokość
-menu_width=101
+menu_width=150
 
-# ===================================KONIECKONFIGURACJI==================================================#
+# NAPIS OPCJI WYBORU
+menu_choice_name=' Podaj opcje wyboru MENU:'
+
+# ===================================KONIEC KONFIGURACJI==================================================#
 
 class Db():
     def __init__(self):     
@@ -65,15 +71,19 @@ class Db():
         else:
             return False
                       
+# ===================================KLASA ScrPrint=================================================#  
+# Klasa służy do wyświetlania informacji na ekrania
+
 class ScrPrint(Db):
    
-    def menu_print(self,menu_name,menu_lista,usser_name,usser_vorname,usser_id_acces):
+    def menu_print(self,menu_name,usser_acces_name,menu_lista,usser_name,usser_surname,usser_id_acces):
         self.menu_lista=menu_lista
-        self.menu_name=menu_name
+        self.menu_name="MENU: "+menu_name
+        
         self.date=datetime.date.today()
         choise=''     
         
-        menu_hello=(usser_name+' '+usser_vorname+" ")
+        menu_hello=(usser_acces_name+' '+usser_name+' '+usser_surname+' ')
         
         print('\n'*30)
 
@@ -83,24 +93,69 @@ class ScrPrint(Db):
         print(menu_char_border_left+self.menu_name.center(menu_width-1)+menu_char_border_right)    
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)                            # Rysuje linie
         
-        for i,value in enumerate(self.menu_lista):     
-            if(value != None):
-                ile=(menu_width-len(value.strip())-6)                                                              # Ustala ilość znaków do równego wypełnienia pol
-                print(menu_char_border_left+' '+value[0]+' - '+value.strip()+' '*ile+menu_char_border_right)        # Rysuje wiersze menu z pozycjamu menu z listy
+ 
+      
+        if(self.menu_lista!=''):
+            for i in (self.menu_lista.keys()):     
+                ile=(menu_width-len(self.menu_lista[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
+                print(menu_char_border_left+' '+i+' - '+self.menu_lista[i].strip()+' '*ile+menu_char_border_right)    # Rysuje wiersze menu z pozycjamu menu z   listy
+            
         
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)
         
         if (sesja.info>''):                                                                              # Rysuje wiersze z informacą w razie wystapienia
             print(menu_char_border_left+sesja.info.center(menu_width-1)+menu_char_border_right) 
             print(menu_char_border_left+menu_char_lin2*(menu_width-1)+menu_char_border_right)
+            
+            
+    def store_print(self,menu_name,usser_acces_name,menu_lista,usser_name,usser_surname,usser_id_acces):
+        self.menu_lista=menu_lista
+        self.menu_name="MENU: "+menu_name
+        
+        self.date=datetime.date.today()
+        choise=''     
+        
+        menu_hello=(usser_acces_name+' '+usser_name+' '+usser_surname+' ')
+        
+        print('\n'*30)
+
+        print(' '+menu_char_border_top*(menu_width-1))                                                           # Rysuje górną krawędź tabeli
+        print(menu_char_border_left+' DATA: '+str(self.date)+' '*(menu_width-18-len(menu_hello))+menu_hello+menu_char_border_right)  # Rysuje tytułowy wiersz tabeli
+        print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)          
+        print(menu_char_border_left+self.menu_name.center(menu_width-1)+menu_char_border_right)    
+        print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)                            # Rysuje linie
+        
+ 
+      
+        if(self.menu_lista!=''):
+            for i,values in enumerate(self.menu_lista):     
+                print(values)
+                #ile=(menu_width-len(self.menu_lista[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
+                #print(menu_char_border_left+' '+str(i)+' - '+self.menu_lista[i].strip()+' '*ile+menu_char_border_right)    # Rysuje wiersze menu z pozycjamu menu z   listy
+            
+        
+        print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)
+        
+        if (sesja.info>''):                                                                              # Rysuje wiersze z informacą w razie wystapienia
+            print(menu_char_border_left+sesja.info.center(menu_width-1)+menu_char_border_right) 
+            print(menu_char_border_left+menu_char_lin2*(menu_width-1)+menu_char_border_right)
+        
+        
+        
+        
+
+# ===================================KLASA Login=================================================#  
+# Klasa służy do logowania uzytkowaników
 
 class Login(ScrPrint):
 
     def login_input(self):
 
-        sesja.menu_print("Logowanie","",'','','')                                                                #Print Login menu table          
+        sesja.menu_print("Logowanie",'','','','','')                                                                #Print Login menu table          
         self.usser_id_in=input('| Podaj swoje ID: ' )                                                   #Input usser login id
       
+      
+  
         sql=("select pr_pass from pracownicy where id_pracownika="+str(self.usser_id_in))               #Sql qwery
         self.sql_list=mysql.sql_read(sql) 
     
@@ -119,16 +174,20 @@ class Login(ScrPrint):
             else:
                 self.info=('Błedne HASŁO')
                 return False
-                
 
+# ===================================KLASA Usser=================================================#  
+# Klasa służy do odczytu danych użytkowniaków
         
 class Usser(Login):
 
     def __init__(self):
         self.info=''
-    def usser_menu (self):    
-        self.usser_read()
     
+    def usser_menu (self):    
+        
+        print('menu_main_list')
+        sesja.menu_print(self.usser_name_acces,self.usser_name_acces,menu_prac_list,self.usser_name,self.usser_surname,self.usser_id_acces)
+        
     
     def usser_read (self):   
         self.usser_id=self.usser_id_in
@@ -136,20 +195,58 @@ class Usser(Login):
         usser_read_list=mysql.sql_read(sql) 
         
         self.usser_name=usser_read_list[3]
-        self.usser_vorname=usser_read_list[4]
+        self.usser_surname=usser_read_list[4]
         self.usser_id_location=usser_read_list[2]
         self.usser_id_acces=usser_read_list[0]
         self.usser_name_acces=usser_read_list[6]
-        
-        usser_menu_list=usser_read_list[7:14]
+        self.usser_menu_list=menu_prac_list
 
         
-        sesja.menu_print('MENU '+self.usser_name_acces,usser_menu_list,self.usser_name,self.usser_vorname,self.usser_id_acces)
-        input()
+        
+       
+        return self.usser_id_acces
+
+# ===================================KLASA Store================================================#  
+# Klasa służy do odczytu informacji o towarach
+
+class Store(Usser):
+
+    def store_menu (self):    
+        
+        
+        sesja.menu_print(self.usser_name_acces,self.usser_name_acces,self.store_menu_list,self.usser_name,self.usser_surname,self.usser_id_acces)
     
         
-   
+    def store_read(self,store_read_choice):
+        print(store_read_choice)
+        
+        if(store_read_choice=="I"):
+            sesja.menu_print("WYSZUKA TOWAR PO INDEX",self.usser_name_acces,'',self.usser_name,self.usser_surname,self.usser_id_acces)
+            
+        
+          
+            self.index=int(input('| Podaj index towaru: ' ))  
+           
+            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM zasoby NATURAL JOIN towary WHERE id_sklep ='"+str(self.usser_id_location)+"'")
+           
+           
+            self.sql_list=mysql.sql_read(sql) 
+    
+            
+            if (self.sql_list!=False):                                                                      #Test exits usser id in Db
 
+                print(self.sql_list[3])
+                #sesja.store_print("WYSZUKANY INDEX",self.usser_name_acces,self.sql_list,self.usser_name,self.usser_surname,self.usser_id_acces)
+                
+                
+                
+                
+                
+                #Returt True : usser id and usser pass corect input
+            else:
+                self.info=('Brak  INDEXU w bazie')                                                              #Set info : usser id not exist i db
+                return False  
+            input()
 
 
 
@@ -159,7 +256,8 @@ print('Początek programu zaczynamy')
 
 
 
-
+# ===================================KLASA Main================================================#  
+# Główna klasa programu
 
 
 
@@ -167,38 +265,85 @@ print('Początek programu zaczynamy')
 class Main():
     def __init__(self):
 
-        self.choise=''
+       
+   
+        
 
         self.main_body()
         
     
     def main_body(self):
-        sesja.menu_print(menu_name,menu1_list,'','','') # wyświetlenie menu GŁÓWNE
-        print(menu_char_border_left+' Podaj numer menu:')
-        self.choise=str(input()) # POBIERA WYBÓR    
-      
-        if ((self.choise=='l') or (self.choise=='L')):
-            # MENU LOGOWANIE
-            sesja.info=''
-            
-            if (sesja.login_pass_test()==True):                                                                             
-                sesja.usser_menu()
 
-            
-            if(self.choise!='W' or self.choise!='w'):
-                self.main_body()
-                       
-        elif(self.choise=='3'):
-            print('Wyjście')    
-            
-        else:
-            sesja.info='Błędna opcja wyboru'
-            self.main_body()
+        sesja.info=''
+        self.choice=''
+        while(True):
+            print(len(menu_main_list))
+            sesja.menu_print(menu_name,'',menu_main_list,'','','') # wyświetlenie menu GŁÓWNE
+            self.choice=str(input(menu_char_border_left+menu_choice_name+' '*(menu_width-len(menu_choice_name)-1)+menu_char_border_right+"\n"+menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right+"\n")) # POBIERA WYBÓR    
+          
+            if ((self.choice=='l') or (self.choice=='L')):
+                # MENU LOGOWANIE
+                sesja.info=''
+                
+                if (sesja.login_pass_test()==True):                                                                             
+                    # MENU UŻYTKOWNIKKA
+                    sesja.usser_read()                                                                      # ODCZYT DANYCH UŻYTKOWNIAKA Z DB
+                    sesja.info='' 
+
+                  
+                    while (True):
+                        self.choice2=''
+                        print("sgdsgdhdfhfdg")
+                        sesja.usser_menu()
+    
+                        self.choice2=str(input(menu_char_border_left+menu_choice_name+' '*(menu_width-len(menu_choice_name)-1)+menu_char_border_right+"\n"+menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right+"\n")) # POBIERA WYBÓR   
+    
+                        if ((self.choice2=='O') or (self.choice2=='o')):
+                            # MENU SZYKANIA TOWARU
+                            sesja.info=''
+                            
+                            while(True):
+                                self.choice=''
+                                
+                                sesja.menu_print('WYSZUKAJ TOWAR',sesja.usser_name_acces,menu_store_list,sesja.usser_name,sesja.usser_surname,sesja.usser_id_acces) # wyświetlenie menu oDCZYT
+                                self.choice=str(input(menu_char_border_left+menu_choice_name+' '*(menu_width-len(menu_choice_name)-1)+menu_char_border_right+"\n"+menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right+"\n")) # POBIERA WYBÓR   
+                            
+                                                   
+                                if (self.choice.upper() in menu_store_list.keys()):
+                  
+                                    if(self.choice=='P' or self.choice=='p'):
+                                        sesja.info='' 
+                                        break                                         
+                                    else:
+                                        sesja.store_read(self.choice.upper())
+
+                                else:
+                                    sesja.info='Błędna opcja wyboru'
+                                
+                        elif(self.choice2=='P' or self.choice2=='p'):
+                            sesja.info='' 
+                            break
+                        elif(self.choice2=='W' or self.choice2=='w'):
+                            self.choise='W'
+                            break                        
+                
+                        else:
+                            sesja.info='Błędna opcja wyboru'
+                if(self.choice=='W' or self.choice=='w'):
+                    break  
+
+            elif(self.choice=='W' or self.choice=='w'):
+                break   
+                
+            else:
+                sesja.info='Błędna opcja wyboru'
+ 
+
 
 
 mysql=Db() # inicjacja bazy dancyh -import ustawień bazy danych / test połączenia
-sesja=Usser() # wyświetlenie menu GŁÓWNE
-    
+                
+sesja=Store() # wyświetlenie menu GŁÓWNE        
 Main()                #uruchomienie głównej klasy pogamu
 
 
