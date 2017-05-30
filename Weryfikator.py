@@ -64,8 +64,10 @@ class Db():
 
         if(self.sql_test(sql)!=False):
             result=self.c.fetchall()        
+            
+            input()
             if (len(result)>0):
-                return result[0]
+                return result
             else:
                 return False
         else:
@@ -108,8 +110,8 @@ class ScrPrint(Db):
             print(menu_char_border_left+menu_char_lin2*(menu_width-1)+menu_char_border_right)
             
             
-    def store_print(self,menu_name,usser_acces_name,menu_lista,usser_name,usser_surname,usser_id_acces):
-        self.menu_lista=menu_lista
+    def store_print(self,menu_name,usser_acces_name,store_list,usser_name,usser_surname,usser_id_acces):
+        self.store_list=store_list
         self.menu_name="MENU: "+menu_name
         
         self.date=datetime.date.today()
@@ -127,11 +129,13 @@ class ScrPrint(Db):
         
  
       
-        if(self.menu_lista!=''):
-            for i,values in enumerate(self.menu_lista):     
-                print(values)
-                #ile=(menu_width-len(self.menu_lista[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
-                #print(menu_char_border_left+' '+str(i)+' - '+self.menu_lista[i].strip()+' '*ile+menu_char_border_right)    # Rysuje wiersze menu z pozycjamu menu z   listy
+        if(self.store_list!=''):
+            
+            
+           for i in (self.store_list):
+               print(i)
+               #ile=(menu_width-len(self.menu_list[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
+               #print(menu_char_border_left+' '+str(i)+' - '+self.store_list[i].strip()+' '*ile+menu_char_border_right+"\n")    # Rysuje wiersze menu z pozycjamu menu z   listy
             
         
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)
@@ -169,7 +173,7 @@ class Login(ScrPrint):
     def login_pass_test(self):  
     
         if(self.login_input()!=False):
-            if(str(self.sql_list[0].strip())==str(self.usser_pass_in.strip())):
+            if(str(self.sql_list[0][0].strip())==str(self.usser_pass_in.strip())):
                 return True
             else:
                 self.info=('Błedne HASŁO')
@@ -194,11 +198,11 @@ class Usser(Login):
         sql="select * from pracownicy natural left join role where id_pracownika="+self.usser_id
         usser_read_list=mysql.sql_read(sql) 
         
-        self.usser_name=usser_read_list[3]
-        self.usser_surname=usser_read_list[4]
-        self.usser_id_location=usser_read_list[2]
-        self.usser_id_acces=usser_read_list[0]
-        self.usser_name_acces=usser_read_list[6]
+        self.usser_name=usser_read_list[0][3]
+        self.usser_surname=usser_read_list[0][4]
+        self.usser_id_location=usser_read_list[0][2]
+        self.usser_id_acces=usser_read_list[0][0]
+        self.usser_name_acces=usser_read_list[0][6]
         self.usser_menu_list=menu_prac_list
 
         
@@ -227,16 +231,15 @@ class Store(Usser):
           
             self.index=int(input('| Podaj index towaru: ' ))  
            
-            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM zasoby NATURAL JOIN towary WHERE id_sklep ='"+str(self.usser_id_location)+"'")
-           
+            
+            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM zasoby NATURAL JOIN towary where id_sklep='"+self.usser_id_location+"'")
+            print(sql)
            
             self.sql_list=mysql.sql_read(sql) 
     
             
-            if (self.sql_list!=False):                                                                      #Test exits usser id in Db
-
-                print(self.sql_list[3])
-                #sesja.store_print("WYSZUKANY INDEX",self.usser_name_acces,self.sql_list,self.usser_name,self.usser_surname,self.usser_id_acces)
+            if (self.sql_list!=False):
+                sesja.store_print("WYSZUKANY INDEX",self.usser_name_acces,self.sql_list,self.usser_name,self.usser_surname,self.usser_id_acces)
                 
                 
                 
@@ -246,8 +249,7 @@ class Store(Usser):
             else:
                 self.info=('Brak  INDEXU w bazie')                                                              #Set info : usser id not exist i db
                 return False  
-            input()
-
+            
 
 
 print('Początek programu zaczynamy')
