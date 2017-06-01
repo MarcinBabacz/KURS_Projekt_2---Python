@@ -37,6 +37,7 @@ menu_name="GŁÓWNE"
 
 # szerokość
 menu_width=150
+menu_height=10
 
 # NAPIS OPCJI WYBORU
 menu_choice_name=' Podaj opcje wyboru MENU:'
@@ -65,7 +66,7 @@ class Db():
         if(self.sql_test(sql)!=False):
             result=self.c.fetchall()        
             
-            input()
+            
             if (len(result)>0):
                 return result
             else:
@@ -101,9 +102,12 @@ class ScrPrint(Db):
             for i in (self.menu_lista.keys()):     
                 ile=(menu_width-len(self.menu_lista[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
                 print(menu_char_border_left+' '+i+' - '+self.menu_lista[i].strip()+' '*ile+menu_char_border_right)    # Rysuje wiersze menu z pozycjamu menu z   listy
-            
+         
+
+        for i in range(menu_height-len(self.menu_lista)):
+            print(menu_char_border_left+" "*(menu_width-1)+menu_char_border_right)
         
-        print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)
+        print(menu_char_border_left+"="*(menu_width-1)+menu_char_border_right)
         
         if (sesja.info>''):                                                                              # Rysuje wiersze z informacą w razie wystapienia
             print(menu_char_border_left+sesja.info.center(menu_width-1)+menu_char_border_right) 
@@ -126,17 +130,20 @@ class ScrPrint(Db):
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)          
         print(menu_char_border_left+self.menu_name.center(menu_width-1)+menu_char_border_right)    
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)                            # Rysuje linie
-        
- 
-      
+  
+        print(menu_char_border_left+" l.P    |        SKLEP        |          GRUPA         |                 NAZWA          |      ILOŚĆ     |        CENA        |"+menu_char_border_right)
+        print(menu_char_border_left+"-"*(menu_width-1)+menu_char_border_right)   
+       
+       
         if(self.store_list!=''):
-            
-            
-           for i in (self.store_list):
-               print(i)
-               #ile=(menu_width-len(self.menu_list[i].strip())-6)                                                      # Ustala ilość znaków do równego wypełnienia pol
-               #print(menu_char_border_left+' '+str(i)+' - '+self.store_list[i].strip()+' '*ile+menu_char_border_right+"\n")    # Rysuje wiersze menu z pozycjamu menu z   listy
-            
+            for i,value in enumerate(self.store_list):
+               # print(i)
+                                                              # Ustala ilość znaków do równego wypełnienia pol
+                print(menu_char_border_left+' '+str(i)+' - '+value[1].strip()+"                       "+menu_char_border_right)   
+                print(menu_char_border_left+"-"*(menu_width-1)+menu_char_border_right)
+                
+                
+                # Rysuje wiersze menu z pozycjamu menu z   listy    
         
         print(menu_char_border_left+menu_char_lin1*(menu_width-1)+menu_char_border_right)
         
@@ -222,6 +229,7 @@ class Store(Usser):
     
         
     def store_read(self,store_read_choice):
+        self.info=('')  
         print(store_read_choice)
         
         if(store_read_choice=="I"):
@@ -232,18 +240,15 @@ class Store(Usser):
             self.index=int(input('| Podaj index towaru: ' ))  
            
             
-            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM zasoby NATURAL JOIN towary where id_sklep='"+self.usser_id_location+"'")
-            print(sql)
+            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM zasoby NATURAL JOIN towary where id_sklep='"+self.usser_id_location+"' AND kod_index='"+str(self.index)+"'")
+            #print(sql)
            
             self.sql_list=mysql.sql_read(sql) 
     
             
             if (self.sql_list!=False):
                 sesja.store_print("WYSZUKANY INDEX",self.usser_name_acces,self.sql_list,self.usser_name,self.usser_surname,self.usser_id_acces)
-                
-                
-                
-                
+ 
                 
                 #Returt True : usser id and usser pass corect input
             else:
@@ -295,7 +300,7 @@ class Main():
                   
                     while (True):
                         self.choice2=''
-                        print("sgdsgdhdfhfdg")
+                        
                         sesja.usser_menu()
     
                         self.choice2=str(input(menu_char_border_left+menu_choice_name+' '*(menu_width-len(menu_choice_name)-1)+menu_char_border_right+"\n"+menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right+"\n")) # POBIERA WYBÓR   
