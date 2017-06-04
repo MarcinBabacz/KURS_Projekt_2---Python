@@ -1,0 +1,8 @@
+1	Admin	Odczyt towary	Zapis	Edycja
+2	Regionalny	Odczyt	Zapis	Edycja
+3	Kierownik	Odczyt	Zapis	Edycja
+4	Zastępca	Odczyt	Zapis	Edycja
+5	Pracownik	Odczyt		
+6	Gość	Odczyt		
+7	Edytor Magazyn	Odczyt	Edycja	Edycja
+8	Edytor HR			
