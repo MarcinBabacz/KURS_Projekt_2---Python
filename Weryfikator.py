@@ -8,10 +8,10 @@ import math
 
 
 # ------------>Config database
-db_pass=''                              #Hasło dostępu do bazy
-db_name=''                      #Nazwa Bazy
-db_usser=''                         #Uzytkownik
-db_host=''                     #Host
+db_pass='Lerolg_8183'                   #Hasło dostępu do bazy
+db_name='python'                      #Nazwa Bazy
+db_usser='root'                         #Uzytkownik
+db_host='localhost'                     #Host
 
 
 # ------------>Config  VIEW
@@ -31,8 +31,8 @@ menu_char_border_row='-'                #Znak oddzielający wiersze tabeli
 # ------------> LISTY MENU
 # W tym obszarze konfigurowane są pozycje menu programu
 menu_main_list={"L":'Logowanie',"W":'Wyjście'}                                          # Lista pozycji menu głównego
-menu_prac_list={"O":'Odczyt',"P":'Powrót',"W":'Wyjście'}                                # Lista pozycji menu pracownika
-menu_store_list={"E":'Ean',"I":'Index',"G":'Grupa',"Z":'Zawaansowane',"P":'Powrót'}     # Lista pozycji menu odczytu magazynu
+menu_prac_list={"O":'Odczyt Towarów',"P":'Powrót',"W":'Wyjście'}                                # Lista pozycji menu pracownika
+menu_store_list={"E":'Ean',"I":'Index',"G":'Grupa',"S":'Szukaj',"P":'Powrót'}     # Lista pozycji menu odczytu magazynu
 menu_name="MENU GŁÓWNE"                                                                 # Etykieta menu głownego
 
 # ------------> ETYKIETY KOLUMN TABELU
@@ -50,8 +50,8 @@ table_label_promo=["PROMOCJA",8,"%-8s"]               # konfiguracja etykiety po
 
 # ------------> ROZMIAR OKNA
 # W tym obszarze konfigurowane są wymiary okna programu
-menu_width=100 # minimum 100!!!!
-menu_height=15  # minimum 5 !!!!!
+menu_width=130 # minimum 100!!!!
+menu_height=22  # minimum 5 !!!!!
 
 # NAPIS OPCJI WYBORU
 menu_choice_name=' Podaj opcje wyboru MENU:'
@@ -68,7 +68,7 @@ class Db():
         
     def sql_test(self,sql):                                                             # metoda testująca połącznie z bazą na podstawie przyjętego zapytania
         try:       
-            self.conn = pymysql.connect(db_host, db_usser,db_pass,db_name)              # inicjacja połączenia z bazą na podstawie dancy z konfiguracji
+            self.conn = pymysql.connect(db_host, db_usser,db_pass,db_name, use_unicode=True, charset="utf8")              # inicjacja połączenia z bazą na podstawie dancy z konfiguracji
             self.c=self.conn.cursor()
             self.c.execute(sql) 
             self.conn.commit()
@@ -148,15 +148,19 @@ class ScrPrint(Db):
         self.store_print_head()                                                                    # Wyswietlenie etykiet tabeli
         
         if(self.store_list!=''):                                                                   # sprawdzenicz czy lista towarów nie jest pusta
+            
+            stronn=-1
             licznik=0                                                                               # inicjacja zmiennej licznika wypisancyh lini
             for i,value in enumerate(self.store_list):                                             # pętla literująca po liscie towarów
+                
+                 
                 name_list=[]                                                                       # inicjacja tableli do dzielenia długich nazw towarów do szerokości
                 # Pętla dzieląca nazwe towaru na części odpowiadające szerokośic ustalonej szerokości pola nazwa
                 for y in range(math.ceil(len(value[4])/(menu_width-self.len_name))):               
                     name_list.append(value[4][y*(menu_width-self.len_name):(y+1)*(menu_width-self.len_name)])
 
                 print(menu_char_border_left+                                                        # Wyświetlenie znaku lewej krawędzie tabeli towarów
-                      str(i).center(table_label_lp[1])+menu_char_border_col+                        # Wyświetlenie liczby porządkowej towaru wraz z separatorem kolumn
+                      str(i+1).center(table_label_lp[1])+menu_char_border_col+                        # Wyświetlenie liczby porządkowej towaru wraz z separatorem kolumn
                       table_label_store[2]%value[0].strip()+menu_char_border_col+                   # Wyświetlenie kodu sklepu wraz z separatorem kolumn
                       table_label_index[2]%value[3]+menu_char_border_col+                           # Wyświetlenie INDEKSU wraz z separatorem kolumn
                       name_list[0]+" "*(menu_width-self.len_name-len(name_list[0]))+menu_char_border_col+ # Wyświetlenia pierwszej części nazwy towaru
@@ -176,7 +180,7 @@ class ScrPrint(Db):
                               menu_char_border_right)    
                         licznik+=1                                                                  # Zwiększeni liczkina wyświetlonych linia
 
-                strony="Strona "+str(math.ceil(i/menu_height))+" z "+str(int(len(self.store_list)/menu_height+0.5)) # Ustalenie aktualnej strony oraz total stron
+                strony="Strona "+str(math.ceil((i+1)/menu_height))+" z "+str(math.ceil((len(self.store_list)+1)/menu_height)) # Ustalenie aktualnej strony oraz total stron
                 str_info=strony+" , ENTER- DALEJ "                                                  # Dodanie info strony
                 if (licznik>=menu_height):                                                          # test czy ilość wierszy jest większa niż ustalona wysokość okan
                     
@@ -186,10 +190,12 @@ class ScrPrint(Db):
                     input()                                                                                   # input w celu zatrzymania wyświetlenia listy towarów
                     
                     licznik=0                                                                                 # wyzerowania licznika wirszy
-                    self.store_print_head()                                                                   # Wyświetlenie nagłówna okna
+                    stronn+=1
                     self.print_header()                                                                       # Wyświetlenie etykiet tabeli
+                    self.store_print_head()                                                                   # Wyświetlenie nagłówna okna
 
-        for i in range(menu_height-len(self.menu_lista)):                                                     # Petla uzupełniająca wiersze do ustalonej wysokości okna
+                
+        for i in range(menu_height-licznik):                                             # Petla uzupełniająca wiersze do ustalonej wysokości okna
               
             print(menu_char_border_left+
                                       " ".center(table_label_lp[1])+"|"+
@@ -302,6 +308,62 @@ class Store(Usser):
         
         menu_name=self.usser_name_acces
         sesja.menu_print(menu_name,self.store_menu_list)
+        
+    def store_trade_choice(self):                                                                          # Metoda wyboru sklep dla roli regionalny
+        sql=("select distinct branza from towary order by branza")
+        self.sql_list=mysql.sql_read(sql) 
+        self.store_trade_list={}
+       
+        if (self.sql_list!=False):
+            for i,value in enumerate(self.sql_list):
+                self.store_trade_list[str(i+1)]="%-15s"%value[0]
+            #self.store_trade_list["P"]="%-15s"%"Powrót"
+        else:
+            self.info=('Brak BRANŻ W BAZIE')                                                              
+
+        while(True):
+            sesja.menu_print("WYBÓR BRANŻY",self.store_trade_list)
+            self.info=''  
+            input_info="Podaj ID BRANŻY "
+            print(menu_char_border_left+input_info+" "*(menu_width-len(input_info)-1)+menu_char_border_right)
+            print(menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right)            
+            trade_tmp=input()
+
+            if trade_tmp in self.store_trade_list:
+                if(trade_tmp!="P"):
+                    return self.store_trade_list[trade_tmp]
+                else:
+                    return False
+            else:
+                self.info=('Błędna BRANŻA') 
+    
+    def store_group_choice(self,trade):                                                                          # Metoda wyboru sklep dla roli regionalny
+        sql=("select distinct GRUPA from towary where branza='"+trade+"' order by grupa")
+        self.sql_list=mysql.sql_read(sql) 
+        self.store_group_list={}
+       
+        if (self.sql_list!=False):
+            for i,value in enumerate(self.sql_list):
+                self.store_group_list[str(i+1)]="%-15s"%value[0]
+           #self.store_group_list["P"]="%-15s"%"Powrót"
+        else:
+            self.info=('Brak GRUP W SKLEPIE')                                                              
+            sesja.store_group_choice(trade_tmp)
+        while(True):
+            sesja.menu_print("WYBÓR GRUPY TOWAROWEJ W BRANŻY "+trade,self.store_group_list)
+            self.info=''  
+            input_info="Podaj ID BRANŻY "
+            print(menu_char_border_left+input_info+" "*(menu_width-len(input_info)-1)+menu_char_border_right)
+            print(menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right)            
+            group_tmp=input()
+
+            if group_tmp in self.store_group_list:
+                if(group_tmp!="P"):
+                    return self.store_group_list[group_tmp]
+                else:
+                    return False
+            else:
+                self.info=('Błędna GRUPA') 
 
     def store_read(self,store_read_choice,loc_tmp):
         sql=''
@@ -334,8 +396,20 @@ class Store(Usser):
             print(menu_char_border_left+menu_char_border_down*(menu_width-1)+menu_char_border_right)
             self.input_tmp=input()            
             
-            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM bazaean NATURAL JOIN zasoby NATURAL JOIN towary where id_sklep='"+loc_tmp+"'  AND grupa='"+str(self.input_tmp)+"'")
+            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM bazaean NATURAL JOIN zasoby NATURAL JOIN towary where id_sklep='"+loc_tmp+"'  AND grupa='"+str(self.input_tmp)+"' order by towar_nazwa")
             serch_name="WYSZUKANY grupa: "+self.input_tmp      
+       
+        if(store_read_choice=="S"):    
+            # Wyszukanie towaru w bazie dla Grupy towarowej
+            
+            trade_tmp=sesja.store_trade_choice();
+            
+            gropu_tmp=sesja.store_group_choice(trade_tmp);
+            
+    
+            sql=("SELECT id_sklep,branza,grupa, kod_index, towar_nazwa, zasoby_ilosc, zasoby_cena FROM bazaean NATURAL JOIN zasoby NATURAL JOIN towary where id_sklep='"+loc_tmp+"'  AND grupa='"+str(gropu_tmp)+"'")
+            serch_name="TOWARY Z GRUY TOWAROWEJ: "+gropu_tmp         
+       
        
        
         if(len(sql)!=0):                                                                             # spradzenie czy zapytanie zostało wygenrowanie poprawnie
@@ -346,7 +420,7 @@ class Store(Usser):
                 self.info=('BRAK TOWARU W BAZIE SPEŁNIAJĄCEGO KRYTERIA')                             #Set info : usser id not exist i db
                 return False  
         else:  
-            self.info=('BRAK WYBRANEGO MODUŁU WYSZUKIWANIA')                                         #Set info : usser id not exist i db
+            #self.info=('BRAK WYBRANEGO MODUŁU WYSZUKIWANIA')                                         #Set info : usser id not exist i db
             return False             
         
 

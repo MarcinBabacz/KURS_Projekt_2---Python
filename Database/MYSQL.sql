@@ -1,8 +1,8 @@
-# Tworzenie bazy projekt1
-create database projekt1;
+# Tworzenie bazy danych
+create database python;
 
 # Przełaczenie aktywnej bazy
-use projekt1;
+use python;
 
 #======================== Tworzenie tabel ========================>
 
@@ -108,7 +108,7 @@ CREATE TABLE pracownicy (
 
 # Baze EAN kodów ean oraz indeksów towarów
   
-LOAD DATA LOCAL INFILE 'C:/Users/Dell/Desktop/Kurs/Projekty/Projekt 1/csv/bazaean.csv' INTO TABLE BAZAEAN;
+LOAD DATA LOCAL INFILE '/csv/bazaean.csv' INTO TABLE BAZAEAN;
 
 # Wczytanie bazy sklepów
 LOAD DATA LOCAL INFILE 'C:/Users/Dell/Desktop/Kurs/Projekty/Projekt 1/csv/sklepy.csv' INTO TABLE sklepy;
